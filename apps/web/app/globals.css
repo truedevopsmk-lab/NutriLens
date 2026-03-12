@@ -1,0 +1,45 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+}
+
+body {
+  min-height: 100vh;
+  font-family: "Avenir Next", "Segoe UI", sans-serif;
+  background:
+    radial-gradient(circle at top left, rgba(217, 198, 83, 0.24), transparent 30%),
+    radial-gradient(circle at top right, rgba(216, 93, 49, 0.22), transparent 32%),
+    linear-gradient(180deg, #f9f4ec 0%, #f1ede6 100%);
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: "Iowan Old Style", "Palatino Linotype", serif;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(17, 19, 26, 0.24) transparent;
+}
+
+.glass-panel {
+  border: 1px solid rgba(17, 19, 26, 0.08);
+  background: rgba(255, 255, 255, 0.74);
+  backdrop-filter: blur(16px);
+  box-shadow: 0 16px 48px rgba(17, 19, 26, 0.12);
+}
+
+.app-gradient {
+  background:
+    radial-gradient(circle at top, rgba(255, 255, 255, 0.72), transparent 40%),
+    linear-gradient(135deg, rgba(216, 93, 49, 0.16), rgba(24, 74, 102, 0.14));
+}
+
+.metric-ring {
+  background: conic-gradient(#d85d31 0deg, #d85d31 220deg, rgba(17, 19, 26, 0.08) 220deg);
+}

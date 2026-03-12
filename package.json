@@ -1,0 +1,22 @@
+{
+  "name": "nutrilens",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "dev": "concurrently \"npm run dev --workspace @nutrilens/api\" \"npm run dev --workspace @nutrilens/web\"",
+    "build": "npm run build --workspace @nutrilens/api && npm run build --workspace @nutrilens/web",
+    "start": "concurrently \"npm run start --workspace @nutrilens/api\" \"npm run start --workspace @nutrilens/web\"",
+    "lint": "npm run lint --workspace @nutrilens/api && npm run lint --workspace @nutrilens/web",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate dev",
+    "prisma:studio": "prisma studio"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2",
+    "prisma": "^6.6.0",
+    "typescript": "^5.8.2"
+  }
+}

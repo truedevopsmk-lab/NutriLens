@@ -1,0 +1,85 @@
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "linux-arm64-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum MealType {
+  BREAKFAST
+  LUNCH
+  DINNER
+  SNACK
+}
+
+enum ActivitySource {
+  GARMIN
+  MANUAL
+  IMPORTED
+}
+
+model User {
+  id        String     @id @default(cuid())
+  email     String     @unique
+  password  String
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  meals     Meal[]
+  activities Activity[]
+}
+
+model Meal {
+  id                  String    @id @default(cuid())
+  userId              String
+  mealType            MealType
+  photoUrl            String?
+  sourceImageMimeType String?
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+  user                User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  foods               Food[]
+
+  @@index([userId, createdAt])
+}
+
+model Food {
+  id                 String   @id @default(cuid())
+  mealId             String
+  name               String
+  portionDescription String?
+  quantity           Decimal? @db.Decimal(8, 2)
+  unit               String?
+  calories           Int      @default(0)
+  protein            Decimal  @default(0) @db.Decimal(8, 2)
+  carbs              Decimal  @default(0) @db.Decimal(8, 2)
+  fat                Decimal  @default(0) @db.Decimal(8, 2)
+  fiber              Decimal  @default(0) @db.Decimal(8, 2)
+  confidence         Decimal? @db.Decimal(4, 2)
+  externalFoodId     String?
+  createdAt          DateTime @default(now())
+  meal               Meal     @relation(fields: [mealId], references: [id], onDelete: Cascade)
+
+  @@index([mealId])
+}
+
+model Activity {
+  id             String         @id @default(cuid())
+  userId         String
+  date           DateTime
+  caloriesBurned Int            @default(0)
+  steps          Int            @default(0)
+  heartRateAvg   Int?
+  activityCount  Int            @default(0)
+  source         ActivitySource @default(GARMIN)
+  externalId     String?
+  rawPayload     Json?
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  user           User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, date, source])
+  @@index([userId, date])
+}

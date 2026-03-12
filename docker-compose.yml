@@ -1,0 +1,71 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: nutrilens
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d nutrilens"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    env_file:
+      - .env
+    environment:
+      NODE_ENV: production
+      NODE_TLS_REJECT_UNAUTHORIZED: "0"
+      DATABASE_URL: ${DATABASE_URL}
+      CORS_ORIGIN: ${CORS_ORIGIN}
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN}
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      OPENAI_VISION_MODEL: ${OPENAI_VISION_MODEL}
+      FATSECRET_CLIENT_ID: ${FATSECRET_CLIENT_ID}
+      FATSECRET_CLIENT_SECRET: ${FATSECRET_CLIENT_SECRET}
+      FATSECRET_AUTH_URL: ${FATSECRET_AUTH_URL}
+      FATSECRET_BASE_URL: ${FATSECRET_BASE_URL}
+      FATSECRET_REGION: ${FATSECRET_REGION}
+      GARMIN_SYNC_MODE: ${GARMIN_SYNC_MODE}
+      GARMIN_ACCESS_TOKEN_URL: ${GARMIN_ACCESS_TOKEN_URL}
+      GARMIN_BASE_URL: ${GARMIN_BASE_URL}
+      GARMIN_DAILY_SUMMARY_PATH: ${GARMIN_DAILY_SUMMARY_PATH}
+      GARMIN_ACTIVITY_PATH: ${GARMIN_ACTIVITY_PATH}
+      GARMIN_CLIENT_ID: ${GARMIN_CLIENT_ID}
+      GARMIN_CLIENT_SECRET: ${GARMIN_CLIENT_SECRET}
+      GARMIN_USER_ID: ${GARMIN_USER_ID}
+      GARMIN_REGION: ${GARMIN_REGION}
+      ALLOW_DEMO_MODE: ${ALLOW_DEMO_MODE}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "4000:4000"
+
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+    env_file:
+      - .env
+    environment:
+      NODE_ENV: production
+      NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL}
+      NEXT_PUBLIC_API_BASE_URL: ${NEXT_PUBLIC_API_BASE_URL}
+    depends_on:
+      - api
+    ports:
+      - "3000:3000"
+
+volumes:
+  postgres_data:
